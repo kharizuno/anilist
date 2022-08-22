@@ -282,7 +282,9 @@ export class Home extends Component<DataProps, DataState> {
                                                         <Link href={{ pathname: '/detail/' + v.id }}>
                                                             <a>
                                                                 <CoverAnime>
-                                                                    <img src={v.coverImage.large} alt={v.title.userPreferred} />
+                                                                    <picture>
+                                                                        <img src={v.coverImage.large} alt={v.title.userPreferred} />
+                                                                    </picture>
                                                                     <TitleAnime>{v.title.userPreferred}</TitleAnime>
                                                                     <EpisodeAnime><span>Episodes</span> {v.episodes}</EpisodeAnime>
                                                                 </CoverAnime>

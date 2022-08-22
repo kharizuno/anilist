@@ -79,6 +79,8 @@ const HeaderBanner = styled.div<DataStyle>`
         svg {
             color: #fff;
             font-size: 20px;
+            width: 22px;
+            height: 22px;
         }
 
         &.active,
@@ -105,6 +107,8 @@ const HeaderBanner = styled.div<DataStyle>`
 
             svg {
                 font-size: 16px;
+                width: 15px;
+                height: 15px;
             }
         }
     }
@@ -328,7 +332,9 @@ export class Anime extends Component<DataProps, DataState> {
                                                     <Container>
                                                         <BoxAnime>
                                                             <CoverAnime>
-                                                                <img src={v.coverImage.large} alt={v.title.userPreferred} />
+                                                                <picture>
+                                                                    <img src={v.coverImage.large} alt={v.title.userPreferred} />
+                                                                </picture>
                                                             </CoverAnime>
                                                             <DetailAnime>
                                                                 <TitleAnime>{v.title.userPreferred}</TitleAnime>
@@ -382,9 +388,11 @@ export class Anime extends Component<DataProps, DataState> {
                                                                     (v.characterPreview && v.characterPreview.edges) &&
                                                                     v.characterPreview.edges.map((v1: any, i1: number) => {
                                                                         return (
-                                                                            <CharChild>
+                                                                            <CharChild key={i1}>
                                                                                 <CharCard>
-                                                                                    <img src={v1.node.image.large}/>
+                                                                                    <picture>
+                                                                                        <img src={v1.node.image.large} alt={v1.node.name.userPreferred} />
+                                                                                    </picture>
                                                                                     <div className='desc'>
                                                                                         <div className='detail'>
                                                                                             {v1.node.name.userPreferred}
@@ -397,7 +405,9 @@ export class Anime extends Component<DataProps, DataState> {
                                                                                             <span>{v1.voiceActors[0].language}</span>
                                                                                         </div>
                                                                                     </div>
-                                                                                    <img src={v1.voiceActors[0].image.large}/>
+                                                                                    <picture>
+                                                                                        <img src={v1.voiceActors[0].image.large} alt={v1.voiceActors[0].name.userPreferred} />
+                                                                                    </picture>
                                                                                 </CharCard>
                                                                             </CharChild>
                                                                         )

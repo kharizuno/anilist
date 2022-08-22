@@ -122,10 +122,14 @@ const CoverAnime = styled.div`
     padding: 10px;
     height: 100px;
 
-    img {
+    picture {
         width: 100%;
-        height: 100%;
-        object-fit: cover;
+
+        img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
     }
 
     @media only screen and (max-width: 500px) {
@@ -137,9 +141,10 @@ const TitleAnime = styled.div`
     display: flex;
     flex: 0 100%;
     flex-wrap: wrap;
+    flex-decoration: row;
 
-    padding: 15px;
-    font-size: 16px;
+    padding: 15px 15px 15px 0;
+    font-size: 14px;
 
     align-items: center;
     justify-content: space-between;
@@ -451,7 +456,9 @@ export class AnimeCollection extends Component<DataProps, DataState> {
                                                                         return (
                                                                             <ContentAnime key={i}>
                                                                                 <CoverAnime>
-                                                                                    <img src={v.coverImage.large} alt={v.title.userPreferred} />
+                                                                                    <picture>
+                                                                                        <img src={v.coverImage.large} alt={v.title.userPreferred} />
+                                                                                    </picture>
                                                                                 </CoverAnime>
                                                                                 <DetailAnime>
                                                                                     <TitleAnime>

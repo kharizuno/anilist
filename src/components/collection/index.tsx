@@ -196,6 +196,8 @@ const BtnIcon = styled.div`
     svg {
         color: #fff;
         font-size: 14px;
+        width: 15px;
+        height: 15px;
     }
 `
 
@@ -416,7 +418,9 @@ export class Collection extends Component<DataProps, DataState> {
                                                             <CoverCollect>
                                                                 <Link href={{ pathname: '/my-collection/' + v.id }}>
                                                                     <a>
-                                                                        <img src='/collection.jpeg' />
+                                                                        <picture>
+                                                                            <img src='/collection.jpeg' alt='collection' />
+                                                                        </picture>
                                                                         <TitleCollect>{v.name}</TitleCollect>
                                                                         <AnimeCollect>{v.anime.length} Animes</AnimeCollect>
                                                                     </a>
