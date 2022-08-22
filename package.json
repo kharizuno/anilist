@@ -1,0 +1,51 @@
+{
+  "name": "animeapp",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next",
+    "dev:staging": "BUILD_ENV=staging npm run dev",
+    "dev:production": "BUILD_ENV=production next -p 5100",
+    "build": "next build",
+    "build:staging": "BUILD_ENV=staging npm run build",
+    "build:production": "BUILD_ENV=production npm run build",
+    "start": "next start -p 5100",
+    "start:staging": "BUILD_ENV=staging npm run start",
+    "start:production": "BUILD_ENV=production npm run start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@apollo/client": "^3.6.9",
+    "@emotion/react": "^11.10.0",
+    "@emotion/styled": "^11.10.0",
+    "@fortawesome/fontawesome-svg-core": "^6.1.2",
+    "@fortawesome/free-regular-svg-icons": "^6.1.2",
+    "@fortawesome/free-solid-svg-icons": "^6.1.2",
+    "@fortawesome/react-fontawesome": "^0.2.0",
+    "@mui/icons-material": "^5.8.4",
+    "@mui/material": "^5.10.1",
+    "babel-plugin-macros": "^3.1.0",
+    "graphql": "^16.6.0",
+    "html-react-parser": "^3.0.3",
+    "moment": "^2.29.4",
+    "moment-timezone": "^0.5.34",
+    "next": "12.2.5",
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
+    "react-paginate": "^8.1.3",
+    "react-redux": "^8.0.2",
+    "redux": "^4.2.0",
+    "redux-promise-middleware": "^6.1.2",
+    "redux-thunk": "^2.4.1",
+    "stripchar": "^1.2.1"
+  },
+  "devDependencies": {
+    "@emotion/babel-plugin": "^11.10.0",
+    "@types/node": "18.7.6",
+    "@types/react": "18.0.17",
+    "@types/react-dom": "18.0.6",
+    "eslint": "8.22.0",
+    "eslint-config-next": "12.2.5",
+    "typescript": "4.7.4"
+  }
+}
