@@ -1,4 +1,5 @@
 import { withRouter } from 'next/router'
+import Link from 'next/link';
 
 import React, { Component } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
@@ -8,10 +9,12 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faHeart } from '@fortawesome/free-solid-svg-icons';
 
 import * as actPost from '../../redux/actions/post';
+import * as actCollection from '../../redux/actions/collection';
 
 import AnimeCollection from '../collection/anime';
 import HTMLReactParser from 'html-react-parser';
 import styled from '@emotion/styled';
+import Meta from '../partial/meta';
 
 const Container = styled.div`
     max-width: 80%;
@@ -122,6 +125,7 @@ const CoverAnime = styled.div`
         width: 100%;
         height: 400px;
         object-fit: cover;
+        border-radius: 8px;
     }
 
     @media only screen and (max-width: 992px) {
@@ -141,6 +145,7 @@ const DetailAnime = styled.div`
 `;
 
 const TitleAnime = styled.h1`
+    flex: 0 100%;
     font-size: 18px;
     color: rgba(92,114,138);
     margin: 15px;
@@ -189,6 +194,26 @@ const SideAnime = styled.div`
         .detail {
             flex: 0 50%;
         }
+    }
+`
+
+const Collection = styled.div`
+    display: flex;
+    flex-wrap: wrap;
+    margin: 15px;
+
+    .title {
+        flex: 0 100%;
+        color: rgba(92,114,138);
+        margin-bottom: 10px;
+    }
+
+    .tag {
+        margin: 4px;
+        padding: 8px;
+        font-size: 12px;
+        background-color: #ffbf00;
+        border-radius: 6px;
     }
 `
 
@@ -283,11 +308,13 @@ interface DataStyle {
 }
 
 interface DataProps extends PropsFromRedux {
-	router: any;
+    router: any;
     postList: any;
+    collectionList: any;
 }
 
 interface DataState {
+    data: any;
     modal: boolean;
 }
 
@@ -296,21 +323,45 @@ export class Anime extends Component<DataProps, DataState> {
         super(props);
 
         this.state = {
+            data: false,
             modal: false
         }
     }
-    
+
+    componentDidMount() {
+        let data = localStorage.getItem('collection');
+        this.setState({ data: (data === null) ? [] : JSON.parse(data) });
+    }
+
+    componentDidUpdate() {
+        if (this.props.collectionList) {
+            this.props.actCollection.clearCollection();
+
+            let data = localStorage.getItem('collection');
+            this.setState({ data: (data === null) ? [] : JSON.parse(data) });
+        }
+    }
+
     collection() {
         this.setState({ modal: (this.state.modal) ? false : true });
     }
 
     render() {
         const { postList } = this.props;
-        const { modal } = this.state;
+        const { data, modal } = this.state;
 
         let idx: number = 0;
         if (postList && postList.data && postList.data.Page.pageInfo.total > 0) {
             idx = postList.data.Page.media[0].id;
+        }
+
+        let collection: any = [];
+        if (data.length > 0) {
+            data.map((v: any) => {
+                if (v.anime.indexOf(idx) >= 0) {
+                    collection.push(v);
+                }
+            })
         }
 
         return (
@@ -324,8 +375,9 @@ export class Anime extends Component<DataProps, DataState> {
                                         postList.data.Page.media.map((v: any, i: number) => {
                                             return (
                                                 <section key={i}>
+                                                    <Meta title={v.title.userPreferred} keywords={v.title.userPreferred} description={v.description}/>
                                                     <HeaderBanner src={v.bannerImage}>
-                                                        <div className='collection' onClick={() => this.collection()}>
+                                                        <div className={(collection.length > 0) ? 'collection active' : 'collection'} onClick={() => this.collection()}>
                                                             <FontAwesomeIcon icon={faHeart} size='1x' />
                                                         </div>
                                                     </HeaderBanner>
@@ -339,6 +391,7 @@ export class Anime extends Component<DataProps, DataState> {
                                                             <DetailAnime>
                                                                 <TitleAnime>{v.title.userPreferred}</TitleAnime>
                                                                 <DescAnime>{HTMLReactParser((v.description) ? v.description : '')}</DescAnime>
+
                                                                 <SideAnime>
                                                                     <div className='detail'>
                                                                         <div className='title'>Format</div>
@@ -381,6 +434,26 @@ export class Anime extends Component<DataProps, DataState> {
                                                                         {v.genres.join(', ')}
                                                                     </div>
                                                                 </SideAnime>
+
+                                                                {
+                                                                    collection.length > 0 &&
+                                                                    <Collection>
+                                                                        <div className='title'>Your Collections</div>
+                                                                        {
+                                                                            collection.map((v1: any, i1: number) => {
+                                                                                return (
+                                                                                    <Link href={{pathname: '/collection/' + v1.id}} key='i1'>
+                                                                                        <a>
+                                                                                            <div className='tag'>
+                                                                                                {v1.name}
+                                                                                            </div>
+                                                                                        </a>
+                                                                                    </Link>
+                                                                                )
+                                                                            })
+                                                                        }
+                                                                    </Collection>
+                                                                }
                                                             </DetailAnime>
                                                             <CharAnime>
                                                                 <div className='title'>Characters</div>
@@ -421,12 +494,20 @@ export class Anime extends Component<DataProps, DataState> {
                                         })
                                     }
                                 </>
-                                
+
+                                :
+                                <Container>
+                                    <BoxInfo>
+                                        <div className='info'>
+                                            Sorry, Anime is not available
+                                        </div>
+                                    </BoxInfo>
+                                </Container>
                             :
                             <Container>
                                 <BoxInfo>
                                     <div className='info'>
-                                        Sorry, Anime is not available
+                                        Something Wrong
                                     </div>
                                 </BoxInfo>
                             </Container>
@@ -434,18 +515,10 @@ export class Anime extends Component<DataProps, DataState> {
                         <Container>
                             <BoxInfo>
                                 <div className='info'>
-                                    Something Wrong
+                                    Loading...
                                 </div>
                             </BoxInfo>
                         </Container>
-                    :
-                    <Container>
-                        <BoxInfo>
-                            <div className='info'>
-                                Loading...
-                            </div>
-                        </BoxInfo>
-                    </Container>
                 }
 
                 {
@@ -459,14 +532,16 @@ export class Anime extends Component<DataProps, DataState> {
 
 const mapStateToProps = (state: any) => {
     return {
-        postList: state.post.postList
+        postList: state.post.postList,
+        collectionList: state.collection.collectionList
     }
 }
 
 const mapDispatchToProps = (dispatch: any) => {
     return {
-		actPost: bindActionCreators(actPost, dispatch)
-	}
+        actPost: bindActionCreators(actPost, dispatch),
+        actCollection: bindActionCreators(actCollection, dispatch)
+    }
 }
 
 const connector = connect(mapStateToProps, mapDispatchToProps);

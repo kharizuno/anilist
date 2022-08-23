@@ -55,8 +55,24 @@ const ChildAnime = styled.div`
     display: flex;
     flex: 0 20%;
 
+    a {
+        margin: 10px;
+    }
+
     @media only screen and (max-width: 992px) {
         flex: 0 33.33%;
+    }
+
+    @media only screen and (max-width: 768px) {
+        a {
+            margin: 5px;
+        }
+    }
+
+    @media only screen and (max-width: 650px) {
+        a {
+            margin: 3px;
+        }
     }
 
     @media only screen and (max-width: 350px) {
@@ -70,9 +86,7 @@ const CoverAnime = styled.div`
     height: 450px;
     background-color: #fff;
 
-    margin: 10px;
     padding: 10px;
-
     border-radius: 8px;
     box-shadow: rgba(0, 0, 0, 0.09) 0px 3px 12px;
     transition: all 0.2s ease;
@@ -105,13 +119,11 @@ const CoverAnime = styled.div`
 
     @media only screen and (max-width: 768px) {
         height: 350px;
-        margin: 5px;
         padding: 8px;
     }
 
     @media only screen and (max-width: 650px) {
         height: 280px;
-        margin: 3px;
         padding: 5px;
     }
 

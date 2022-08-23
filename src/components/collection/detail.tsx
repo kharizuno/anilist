@@ -4,16 +4,18 @@ import Link from 'next/link';
 import React, { Component } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { bindActionCreators } from 'redux';
+import ReactPaginate from 'react-paginate';
 
 import { ApolloClient, InMemoryCache } from '@apollo/client'
 import { mediaQuery } from '../../graphql/media';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faSave, faEdit } from '@fortawesome/free-solid-svg-icons';
+import { faSave, faEdit, faTrash } from '@fortawesome/free-solid-svg-icons';
 
 import { Dialog, DialogTitle, DialogContent, DialogActions, TextField, Snackbar, Alert } from '@mui/material';
 
 import * as actPost from '../../redux/actions/post';
+import * as actCollection from '../../redux/actions/collection';
 
 import styled from '@emotion/styled';
 import moment from 'moment';
@@ -100,15 +102,7 @@ const BoxCollect = styled.div`
 const ChildCollect = styled.div`
     position: relative;
     display: flex;
-    flex: 0 33.33%;
-
-    @media only screen and (max-width: 768px) {
-        flex: 0 50%;
-    }
-
-    @media only screen and (max-width: 550px) {
-        flex: 0 100%;
-    }
+    flex: 0 100%;
 `
 
 const CoverCollect = styled.div`
@@ -170,6 +164,10 @@ const BtnAction = styled.div`
     align-items: center;
     justify-content: end;
     margin: 30px 30px;
+
+    &.leftPosition {
+        justify-content: start;
+    }
 `
 
 const BtnIcon = styled.div`
@@ -197,9 +195,203 @@ const BtnIcon = styled.div`
     }
 `
 
+const BoxAnime = styled.div`
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: start;
+    justify-content: start;
+`
+
+const ChildAnime = styled.div`
+    position: relative;
+    display: flex;
+    flex: 0 20%;
+
+    a {
+        margin: 10px;
+    }
+
+    @media only screen and (max-width: 992px) {
+        flex: 0 33.33%;
+    }
+
+    @media only screen and (max-width: 768px) {
+        a {
+            margin: 5px;
+        }
+    }
+
+    @media only screen and (max-width: 650px) {
+        a {
+            margin: 3px;
+        }
+    }
+
+    @media only screen and (max-width: 350px) {
+        flex: 0 50%;
+    }
+`
+
+const CoverAnime = styled.div`
+    position: relative;
+    width: 100%;
+    height: 450px;
+    background-color: #fff;
+
+    padding: 10px;
+    border-radius: 8px;
+    box-shadow: rgba(0, 0, 0, 0.09) 0px 3px 12px;
+    transition: all 0.2s ease;
+
+    img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 8px;
+    }
+
+    :hover {
+        box-shadow: rgba(0, 0, 0, 0.4) 0px 2px 4px, rgba(0, 0, 0, 0.3) 0px 7px 13px -3px, rgba(0, 0, 0, 0.2) 0px -3px 0px inset;
+        transition: all 0.2s ease;
+        transform: scale(1.05);
+        z-index: 9;
+    }
+
+    @media only screen and (max-width: 1600px) {
+        height: 400px;
+    }
+
+    @media only screen and (max-width: 1280px) {
+        height: 350px;
+    }
+    
+    @media only screen and (max-width: 992px) {
+        height: 400px;
+    }
+
+    @media only screen and (max-width: 768px) {
+        height: 350px;
+        padding: 8px;
+    }
+
+    @media only screen and (max-width: 650px) {
+        height: 280px;
+        padding: 5px;
+    }
+
+    @media only screen and (max-width: 550px) {
+        height: 240px;
+    }
+
+    @media only screen and (max-width: 450px) {
+        height: 200px;
+    }
+
+    @media only screen and (max-width: 350px) {
+        height: 240px;
+    }
+`
+
+const TitleAnime = styled.div`
+    position: absolute;
+    left: 0;
+    bottom: 20px;
+    color: #fff;
+    margin: 0 18px;
+    text-shadow: 1px 1px 0px rgba(0,0,0,0.4);
+
+    @media only screen and (max-width: 550px) {
+        font-size: 14px;
+    }
+
+    @media only screen and (max-width: 450px) {
+        margin: 0 10px;
+        bottom: 10px;
+    }
+
+    @media only screen and (max-width: 400px) {
+        margin: 0 8px;
+        bottom: 8px;
+    }
+`
+
+const EpisodeAnime = styled.div`
+    position: absolute;
+    right: 0;
+    top: 15px;
+    color: #fff;
+    margin: 0 18px;
+    font-size: 20px;
+    text-shadow: 1px 1px 0px rgba(0,0,0,0.4);
+
+    span {
+        font-size: 16px;
+    }
+
+    @media only screen and (max-width: 550px) {
+        font-size: 14px;
+
+        span {
+            font-size: 12px;
+        }
+    }
+
+    @media only screen and (max-width: 450px) {
+        margin: 0 10px;
+        top: 8px;
+    }
+`
+
+const Paginate = styled.div`
+    display: flex;
+    width: 100%;
+    align-items: center;
+    justify-content: center;
+    margin-top: 10px;
+    margin-bottom: 20px;
+
+    ul {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: center;
+
+        margin: 0;
+        padding: 0;
+
+        li {
+            list-style: none;
+
+            a {
+                display: flex;
+                min-width: 40px;
+                padding: 10px 15px;
+                margin: 5px 5px;
+                border-radius: 6px;
+                box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;
+                cursor: pointer;
+            }
+
+            &.selected {
+                a {
+                    color: #fff;
+                    background-color: #141414;
+                }
+            }
+        }
+    }
+
+    @media only screen and (max-width: 550px) {
+        font-size: 14px;
+    }
+`
+
 interface DataProps extends PropsFromRedux {
     router: any;
     postList: any;
+    collectionList: any;
 }
 
 interface DataState {
@@ -210,6 +402,7 @@ interface DataState {
     alertMessage: string;
     formType: string;
     formData: any;
+    animeDelete: any;
 }
 
 export class Collection extends Component<DataProps, DataState> {
@@ -226,13 +419,54 @@ export class Collection extends Component<DataProps, DataState> {
             formData: {
                 id: '',
                 collection: '',
+            },
+            animeDelete: {
+                id: '',
+                name: '',
             }
         }
     }
 
     componentDidMount() {
-        let data = localStorage.getItem('collection');
-        this.setState({ data: (data === null) ? [] : JSON.parse(data) });
+        this.loadCollection();
+    }
+
+    componentDidUpdate(prevProps: any) {
+        if (this.props.router != prevProps.router) {
+            this.loadCollection();
+        }
+
+        if (this.props.collectionList) {
+            this.props.actCollection.clearCollection();
+            this.loadCollection();
+        }
+    }
+
+    loadCollection() {
+        let data: any = localStorage.getItem('collection');
+        data = (data === null) ? [] : JSON.parse(data);
+
+        let router = this.props.router;
+        let query = router.query;
+
+        let id = parseInt(query.id);
+        let idx = this.checkData(data, id);
+
+        if (idx >= 0) {
+            let formData = {
+                id: data[idx].id,
+                collection: data[idx].name,
+                anime: data[idx].anime
+            }
+
+            data = [data[idx]];
+            this.setState({ data, formData });
+
+            let _this = this;
+            setTimeout(() => {
+                _this.loadData(1);
+            }, 100)
+        }
     }
 
     async loadData(page: number) {
@@ -243,14 +477,19 @@ export class Collection extends Component<DataProps, DataState> {
             cache: new InMemoryCache
         });
 
+        let variables = {
+            page: page,
+            perpage: 10,
+            type: 'ANIME'
+        };
+
+        if (this.state.data.length > 0) {
+            Object.assign(variables, { idIn: this.state.data[0].anime });
+        }
 
         client.query({
             query: mediaQuery,
-            variables: {
-                page: page,
-                perpage: 10,
-                type: 'ANIME'
-            }
+            variables: variables
         }).then((result) =>
             this.props.actPost.loadPost(result)
         )
@@ -263,16 +502,17 @@ export class Collection extends Component<DataProps, DataState> {
     modalClick(type?: string, dt?: any) {
         let state = {
             formType: (type) ? type : '',
-            formData: {
-                id: '',
-                collection: '',
-            },
             modal: (this.state.modal) ? false : true
         };
 
         if (dt) {
-            state.formData.id = dt.id;
-            state.formData.collection = dt.name;
+            let animeDelete = this.state.animeDelete;
+            animeDelete.id = dt.id;
+            animeDelete.name = dt.title.userPreferred;
+
+            Object.assign(state, {
+                animeDelete
+            })
         }
 
         this.setState(state)
@@ -317,9 +557,8 @@ export class Collection extends Component<DataProps, DataState> {
             }
 
             this.setState({
-                data,
+                data: [data[checkIndex]],
                 modal: false,
-                formData: { id: '', collection: '' },
                 alert: true,
                 alertType: 'success',
                 alertMessage: alertMessage
@@ -336,7 +575,6 @@ export class Collection extends Component<DataProps, DataState> {
         }, 6000)
     }
 
-
     checkData(arr: any, value: any, field?: string) {
         return arr.indexOf(
             arr.filter((v: any) => {
@@ -349,9 +587,55 @@ export class Collection extends Component<DataProps, DataState> {
         );
     }
 
+    animeRemove() {
+        let formData = this.state.formData;
+        let animeDelete = this.state.animeDelete;
+
+        let data: any = localStorage.getItem('collection');
+        data = (data === null) ? [] : JSON.parse(data);
+
+        let idx = this.checkData(data, formData.id);
+        if (idx >= 0) {
+            let animeIndex = data[idx].anime.indexOf(animeDelete.id);
+            if (animeIndex >= 0) {
+                data[idx].anime.splice(animeIndex, 1);
+                formData.anime = data[idx].anime;
+
+                this.setState({
+                    data: [data[idx]],
+                    modal: false,
+                    formData,
+                    alert: true,
+                    alertType: 'success',
+                    alertMessage: 'Anime collection successfully deleted'
+                })
+
+                localStorage.setItem('collection', JSON.stringify(data));
+
+                let postList = this.props.postList;
+                let newList: any = [];
+                postList.data.Page.media.map((v: any) => {
+                    if (v.id !== animeDelete.id) {
+                        newList.push(v);
+                    }
+                })
+
+                postList = {
+                    data: {
+                        Page: {
+                            pageInfo: postList.data.Page.pageInfo,
+                            media: newList
+                        }
+                    }
+                }
+                this.props.actPost.loadPost(postList);
+            }
+        }
+    }
+
     render() {
         const { postList } = this.props;
-        const { data, modal, alert, alertType, alertMessage, formType, formData } = this.state;
+        const { data, modal, alert, alertType, alertMessage, formType, formData, animeDelete } = this.state;
 
         return (
             <Container>
@@ -367,7 +651,7 @@ export class Collection extends Component<DataProps, DataState> {
                                                     return (
                                                         <ChildCollect key={i}>
                                                             <CoverCollect>
-                                                                <Link href={{ pathname: '/my-collection/' + v.id }}>
+                                                                <Link href={{ pathname: '/collection/' + v.id }}>
                                                                     <a>
                                                                         <picture>
                                                                             <img src='/collection.jpeg' alt='collection' />
@@ -379,7 +663,7 @@ export class Collection extends Component<DataProps, DataState> {
 
                                                                 <BoxAction>
                                                                     <BtnAction>
-                                                                        <BtnIcon className='edit' onClick={() => this.modalClick('edit', v)}>
+                                                                        <BtnIcon className='edit' onClick={() => this.modalClick('edit')}>
                                                                             <FontAwesomeIcon icon={faEdit} size='1x' />
                                                                         </BtnIcon>
                                                                     </BtnAction>
@@ -407,6 +691,79 @@ export class Collection extends Component<DataProps, DataState> {
                         </BoxInfo>
                 }
 
+                <BoxAnime>
+                    {
+                        postList ?
+                            (postList && postList.data) ?
+                                (postList.data.Page.pageInfo.total > 0) ?
+                                    <>
+                                        {
+                                            postList.data.Page.media.map((v: any, i: number) => {
+                                                return (
+                                                    <ChildAnime key={i}>
+                                                        <Link href={{ pathname: '/detail/' + v.id }}>
+                                                            <a>
+                                                                <CoverAnime>
+                                                                    <picture>
+                                                                        <img src={v.coverImage.large} alt={v.title.userPreferred} />
+                                                                    </picture>
+                                                                    <TitleAnime>{v.title.userPreferred}</TitleAnime>
+                                                                    <EpisodeAnime><span>Episodes</span> {v.episodes}</EpisodeAnime>
+                                                                </CoverAnime>
+                                                            </a>
+                                                        </Link>
+
+                                                        <BoxAction>
+                                                            <BtnAction className='leftPosition'>
+                                                                <BtnIcon className='delete' onClick={() => this.modalClick('delete', v)}>
+                                                                    <FontAwesomeIcon icon={faTrash} size='1x' />
+                                                                </BtnIcon>
+                                                            </BtnAction>
+                                                        </BoxAction>
+                                                    </ChildAnime>
+                                                )
+                                            })
+                                        }
+
+                                        {
+                                            postList.data.Page.pageInfo.lastPage > 1 &&
+                                            <Paginate>
+                                                <ReactPaginate
+                                                    breakLabel="..."
+                                                    nextLabel="Next"
+                                                    forcePage={postList.data.Page.pageInfo.currentPage - 1}
+                                                    onPageChange={this.handlePageClick}
+                                                    marginPagesDisplayed={1}
+                                                    pageRangeDisplayed={4}
+                                                    pageCount={postList.data.Page.pageInfo.lastPage}
+                                                    previousLabel="Previous"
+                                                    disableInitialCallback={true}
+                                                />
+                                            </Paginate>
+                                        }
+                                    </>
+
+                                    :
+                                    <BoxInfo>
+                                        <div className='info'>
+                                            Sorry, Anime is not available
+                                        </div>
+                                    </BoxInfo>
+                                :
+                                <BoxInfo>
+                                    <div className='info'>
+                                        Something Wrong
+                                    </div>
+                                </BoxInfo>
+                            :
+                            <BoxInfo>
+                                <div className='info'>
+                                    Loading...
+                                </div>
+                            </BoxInfo>
+                    }
+                </BoxAnime>
+
                 {
                     modal &&
                     <Dialog
@@ -417,22 +774,40 @@ export class Collection extends Component<DataProps, DataState> {
                     >
                         <DialogTitle>
                             <ModalTitle>
-                                {formType} Collection
+                                {
+                                    formType !== 'delete' ?
+                                        `${formType} Collection`
+                                        :
+                                        <div className='delete'>
+                                            {`Do you want to delete this anime "${animeDelete.name}"?`}
+                                        </div>
+                                }
                             </ModalTitle>
                         </DialogTitle>
-                        <DialogContent>
-                            <ModalContent>
-                                <TextField name='collection' value={formData.collection}
-                                    label="Collection Name" variant="outlined"
-                                    fullWidth onChange={(e) => this.updateState(e)} />
-                            </ModalContent>
-                        </DialogContent>
+                        {
+                            formType !== 'delete' &&
+                            <DialogContent>
+                                <ModalContent>
+                                    <TextField name='collection' value={formData.collection}
+                                        label="Collection Name" variant="outlined"
+                                        fullWidth onChange={(e) => this.updateState(e)} />
+                                </ModalContent>
+                            </DialogContent>
+                        }
                         <DialogActions>
                             <BoxButton>
-                                <Button onClick={() => this.actionData(formType)}>
-                                    <FontAwesomeIcon icon={faSave} size='1x' />
-                                    {(formType === 'add') ? 'Save' : 'Update'}
-                                </Button>
+                                {
+                                    formType === 'delete' ?
+                                        <Button className='delete' onClick={() => this.animeRemove()}>
+                                            <FontAwesomeIcon icon={faTrash} size='1x' />
+                                            Delete
+                                        </Button>
+                                        :
+                                        <Button onClick={() => this.actionData(formType)}>
+                                            <FontAwesomeIcon icon={faSave} size='1x' />
+                                            {(formType === 'add') ? 'Save' : 'Update'}
+                                        </Button>
+                                }
                             </BoxButton>
                         </DialogActions>
                     </Dialog>
@@ -457,13 +832,15 @@ export class Collection extends Component<DataProps, DataState> {
 
 const mapStateToProps = (state: any) => {
     return {
-        postList: state.post.postList
+        postList: state.post.postList,
+        collectionList: state.collection.collectionList
     }
 }
 
 const mapDispatchToProps = (dispatch: any) => {
     return {
-        actPost: bindActionCreators(actPost, dispatch)
+        actPost: bindActionCreators(actPost, dispatch),
+        actCollection: bindActionCreators(actCollection, dispatch)
     }
 }
 

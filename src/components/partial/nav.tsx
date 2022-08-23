@@ -42,6 +42,7 @@ const NavChild1 = styled.div`
     display: flex;
     color: #fff;
     padding: 0 15px;
+    cursor: pointer;
 
     svg {
         color: #ffbf00;
@@ -49,6 +50,10 @@ const NavChild1 = styled.div`
         margin-right: 10px;
         width: 18px;
         height: 18px;
+    }
+
+    &.active {
+        color: #ffbf00;
     }
 
     @media only screen and (max-width: 768px) {
@@ -81,13 +86,13 @@ const Nav = (props: any) => {
         <Container>
             <MainNav>
                 <Nav1>
-                    <NavChild1>
+                    <NavChild1 className={(props.router.route === '/') ? 'active' : ''}>
                         <Link href={{ pathname: '/' }}>
                             <a>Home</a>
                         </Link>
                     </NavChild1>
-                    <NavChild1>
-                        <Link href={{ pathname: '/my-collection' }}>
+                    <NavChild1 className={(props.router.route.indexOf('/collection') >= 0) ? 'active' : ''}>
+                        <Link href={{ pathname: '/collection' }}>
                             <a>
                                 My Collection
                             </a>

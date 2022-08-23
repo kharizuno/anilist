@@ -416,7 +416,7 @@ export class Collection extends Component<DataProps, DataState> {
                                                     return (
                                                         <ChildCollect key={i}>
                                                             <CoverCollect>
-                                                                <Link href={{ pathname: '/my-collection/' + v.id }}>
+                                                                <Link href={{ pathname: '/collection/' + v.id }}>
                                                                     <a>
                                                                         <picture>
                                                                             <img src='/collection.jpeg' alt='collection' />
