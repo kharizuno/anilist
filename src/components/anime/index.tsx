@@ -442,7 +442,7 @@ export class Anime extends Component<DataProps, DataState> {
                                                                         {
                                                                             collection.map((v1: any, i1: number) => {
                                                                                 return (
-                                                                                    <Link href={{pathname: '/collection/' + v1.id}} key='i1'>
+                                                                                    <Link href={{pathname: '/collection/' + v1.id}} key={i1}>
                                                                                         <a>
                                                                                             <div className='tag'>
                                                                                                 {v1.name}

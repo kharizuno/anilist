@@ -238,14 +238,25 @@ export class Collection extends Component<DataProps, DataState> {
     componentDidMount() {
         let data = localStorage.getItem('collection');
         this.setState({ data: (data === null) ? [] : JSON.parse(data) });
+
+        let _this = this;
+        setTimeout(() => {
+            _this.loadData();
+        }, 100)
     }
 
     componentDidUpdate() {
         if (this.props.collectionList) {
+            console.log(this.props.collectionList)
             this.props.actCollection.clearCollection();
 
             let data = localStorage.getItem('collection');
             this.setState({ data: (data === null) ? [] : JSON.parse(data) });
+
+            let _this = this;
+            setTimeout(() => {
+                _this.loadData();
+            }, 100)
         }
     }
 
@@ -257,14 +268,24 @@ export class Collection extends Component<DataProps, DataState> {
             cache: new InMemoryCache
         });
 
+        let variables = {
+            page: 1,
+            perpage: 50,
+            type: 'ANIME'
+        };
+
+        if (this.state.data.length > 0) {
+            let idIn: any = [];
+            this.state.data.map((v: any) => {
+                idIn = idIn.concat(v.anime)
+            })
+
+            Object.assign(variables, { idIn });
+        }
 
         client.query({
             query: mediaQuery,
-            variables: {
-                page: 1,
-                perpage: 10,
-                type: 'ANIME'
-            }
+            variables: variables
         }).then((result) =>
             this.props.actPost.loadPost(result)
         )
@@ -379,7 +400,6 @@ export class Collection extends Component<DataProps, DataState> {
         }, 6000)
     }
 
-
     checkData(arr: any, value: any, field?: string) {
         return arr.indexOf(
             arr.filter((v: any) => {
@@ -413,13 +433,24 @@ export class Collection extends Component<DataProps, DataState> {
                                         <BoxCollect>
                                             {
                                                 data.map((v: any, i: number) => {
+                                                    let cover = false;
+                                                    if (postList && postList.data) {
+                                                        if (postList.data.Page) {
+                                                            postList.data.Page.media.map((v1: any) => {
+                                                                if (v.anime.indexOf(v1.id) >= 0) {
+                                                                    cover = v1.bannerImage
+                                                                }
+                                                            })
+                                                        }
+                                                    }
+
                                                     return (
                                                         <ChildCollect key={i}>
                                                             <CoverCollect>
                                                                 <Link href={{ pathname: '/collection/' + v.id }}>
                                                                     <a>
                                                                         <picture>
-                                                                            <img src='/collection.jpeg' alt='collection' />
+                                                                            <img src={(cover) ? cover : '/collection.jpeg'} alt='collection' />
                                                                         </picture>
                                                                         <TitleCollect>{v.name}</TitleCollect>
                                                                         <AnimeCollect>{v.anime.length} Animes</AnimeCollect>
