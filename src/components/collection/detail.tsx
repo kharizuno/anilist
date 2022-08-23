@@ -190,6 +190,8 @@ const BtnIcon = styled.div`
     }
 
     svg {
+        width: 15px;
+        height: 15px;
         color: #fff;
         font-size: 14px;
     }
