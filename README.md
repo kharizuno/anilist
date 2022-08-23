@@ -15,5 +15,8 @@ Open [http://localhost:5100](http://localhost:5100) to view it in the browser.
 The page will reload if you make edits.<br />
 You will also see any lint errors in the console.
 
+### `Demo`
+[https://anilist-kharizuno.vercel.app](https://anilist-kharizuno.vercel.app)
+
 ### 'Have Fun'
 Cheers
