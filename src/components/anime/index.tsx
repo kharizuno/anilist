@@ -14,7 +14,6 @@ import * as actCollection from '../../redux/actions/collection';
 import AnimeCollection from '../collection/anime';
 import HTMLReactParser from 'html-react-parser';
 import styled from '@emotion/styled';
-import Meta from '../partial/meta';
 
 const Container = styled.div`
     max-width: 80%;
@@ -375,7 +374,6 @@ export class Anime extends Component<DataProps, DataState> {
                                         postList.data.Page.media.map((v: any, i: number) => {
                                             return (
                                                 <section key={i}>
-                                                    <Meta title={v.title.userPreferred} keywords={v.title.userPreferred} description={v.description}/>
                                                     <HeaderBanner src={v.bannerImage}>
                                                         <div className={(collection.length > 0) ? 'collection active' : 'collection'} onClick={() => this.collection()}>
                                                             <FontAwesomeIcon icon={faHeart} size='1x' />

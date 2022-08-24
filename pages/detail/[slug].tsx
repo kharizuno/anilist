@@ -11,6 +11,7 @@ import { mediaQuery } from '../../src/graphql/mediaDetail';
 import * as actPost from '../../src/redux/actions/post';
 
 import Anime from '../../src/components/anime'
+import Meta from '../../src/components/partial/meta';
 
 interface Props extends PropsFromRedux {
 	router: any;
@@ -26,8 +27,22 @@ const Detail: NextPage<Props> = (props: Props) => {
 		}
 	})
 
+    let media, animeList = props.animeList;
+    if (animeList && animeList.data) {
+        if (animeList.data.Page && animeList.data.Page.pageInfo.total > 0) {
+            media = animeList.data.Page.media[0];
+        }
+    }
+
 	return (
-		<Anime />
+        <>
+            {
+                media &&
+                <Meta title={media.title.userPreferred} keywords={media.title.userPreferred} description={media.description}/>
+            }
+            
+            <Anime />
+        </>
 	)
 }
 
